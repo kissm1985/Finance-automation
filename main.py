@@ -3,18 +3,21 @@ import smtplib
 from email.mime.text import MIMEText
 import os
 
-# Adatok letöltése
+# Lekérjük az adatokat
 data = yf.download("AAPL", period="1d", interval="1h")
 
-# Ellenőrzés: van adat?
+# Ha nincs adat, kilépünk
 if data.empty or 'Close' not in data.columns:
-    print("⚠️ Nincs elérhető adat az AAPL részvényhez.")
+    print("⚠️ Nincs adat!")
     exit()
 
-# Utolsó záróár kinyerése
-last_price = data['Close'].iloc[-1]
+# Utolsó záróár lekérése: csak így jó!
+last_price = data['Close'].iloc[-1]   # 💡 float érték, nem Series
 
-# E-mail beállítások
+# Ellenőrzésül kiírjuk
+print(f"🔎 Ellenőrzés: {last_price} (type: {type(last_price)})")
+
+# E-mail tartalom
 sender = "istvan.kissm@gmail.com"
 receiver = "istvan.kissm@gmail.com"
 subject = "AAPL aktuális ár"
@@ -25,7 +28,7 @@ msg["Subject"] = subject
 msg["From"] = sender
 msg["To"] = receiver
 
-# E-mail küldés Gmail SMTP-n keresztül
+# Gmail SMTP – alkalmazásjelszóval
 smtp_server = "smtp.gmail.com"
 smtp_port = 587
 password = os.environ.get("EMAIL_PASSWORD")
@@ -34,4 +37,3 @@ with smtplib.SMTP(smtp_server, smtp_port) as server:
     server.starttls()
     server.login(sender, password)
     server.send_message(msg)
-

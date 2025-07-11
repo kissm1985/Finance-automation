@@ -20,6 +20,10 @@ jobs:
       - name: Követelmények telepítése
         run: pip install -r requirements.txt
 
+      - name: Debug környezeti változók
+        run: echo "EMAIL_PASSWORD is set? ${{ secrets.EMAIL_PASSWORD != '' }}"
+
+
       - name: Script futtatása
         env:
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}

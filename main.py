@@ -12,7 +12,10 @@ if data.empty or 'Close' not in data.columns:
     exit()
 
 # Utolsó záróár lekérése: csak így jó!
-last_price = data['Close'].iloc[-1]   # 💡 float érték, nem Series
+
+last_price = data['Close']['AAPL'].iloc[-1]
+
+
 
 # Ellenőrzésül kiírjuk
 print(f"🔎 Ellenőrzés: {last_price} (type: {type(last_price)})")

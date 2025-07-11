@@ -8,8 +8,8 @@ data = yf.download("AAPL", period="1d", interval="1h")
 last_price = data['Close'][-1]
 
 # E-mail adatok
-sender = "te@gmail.com"       # <- IDE ÍRD BE A SAJÁT CÍMED
-receiver = "cel@gmail.com"    # <- IDE A CÍMZETT CÍMET
+sender = "istvan.kissm@gmail.com"       # <- IDE ÍRD BE A SAJÁT CÍMED
+receiver = "istvan.kissm@gmail.com"    # <- IDE A CÍMZETT CÍMET
 subject = "AAPL aktuális ár"
 body = f"Az AAPL részvény utolsó ára: {last_price:.2f} USD"
 

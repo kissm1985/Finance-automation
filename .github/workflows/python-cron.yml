@@ -1,0 +1,26 @@
+name: Daily Stock Report
+
+on:
+  schedule:
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repo letöltése
+        uses: actions/checkout@v3
+
+      - name: Python telepítése
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+
+      - name: Követelmények telepítése
+        run: pip install -r requirements.txt
+
+      - name: Script futtatása
+        env:
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        run: python main.py

@@ -1,109 +1,59 @@
 import os
 import pandas as pd
 import numpy as np
+import yfinance as yf
 import cvxpy as cp
-import requests
-import time
 from datetime import datetime
 from email.mime.text import MIMEText
 import smtplib
 
 # Paraméterek
 symbols = {
-    "RHM.FRK": "RHM",
-    "SIE.FRK": "SIE",
-    "ASME.FRK": "ASME",
-    "EDM6.FRK": "EDM6"
+    "RHM.DE": "Rheinmetall",
+    "SIE.DE": "Siemens",
+    "ASML.AS": "ASML",
+    "EDM6.DE": "iShares ESG ETF"
 }
-
-symbols = {
-    "AAPL": "AAPL",
-    "MSFT": "MSFT",
-    "GOOG": "GOOG",
-    "SPY": "SPY"
-}
-
-
 
 investment_amount = 100
-alpha_vantage_api_key = os.getenv("ALPHA_VANTAGE_KEY")
 sender_email = "istvan.kissm@gmail.com"
 receiver_email = "istvan.kissm@gmail.com"
 password = os.getenv("EMAIL_PASSWORD")
 
-
-    
-def fetch_alpha_vantage(symbol):
-    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={symbol}&apikey={alpha_vantage_api_key}&outputsize=compact"
-    response = requests.get(url)
-    data = response.json()
-
-    if "Time Series (Daily)" not in data:
-        print(f"⚠️ Nincs adat a {symbol} részvényre! Válasz: {data}")
-        return pd.Series(dtype=float)
-
-    time_series = data["Time Series (Daily)"]
-    return pd.Series({pd.to_datetime(date): float(value["5. adjusted close"]) for date, value in time_series.items()})
-
-
-
 # Adatok letöltése
-prices = {}
-for symbol in symbols:
-    series = fetch_alpha_vantage(symbol)
-    time.sleep(15)
-    if not series.empty:
-        prices[symbols[symbol]] = series
+data = yf.download(list(symbols.keys()), period="6mo")["Close"].dropna()
+data.columns = [symbols.get(t, t) for t in data.columns]
+returns = data.pct_change().dropna()
 
-# Árak összeállítása
-df = pd.DataFrame(prices).sort_index()
-returns = df.pct_change().dropna()
-
-print(df.head())
-
-# Kvantum optimalizálás (Sharpe-ráta alapján)
+# Optimalizálás – Sharpe-ráta
 w = cp.Variable(len(returns.columns))
+expected_return = returns.mean().values @ w
 risk = cp.quad_form(w, returns.cov().values)
-ret = returns.mean().values @ w
-prob = cp.Problem(cp.Maximize(ret / cp.sqrt(risk)), [cp.sum(w) == 1, w >= 0])
-prob.solve()
+problem = cp.Problem(cp.Maximize(expected_return / cp.sqrt(risk)), [cp.sum(w) == 1, w >= 0])
+problem.solve()
 
+# Allokáció
 weights = w.value
 allocations = weights / weights.sum()
 alloc_eur = allocations * investment_amount
 
 # Visszatesztelés
-def simulate_backtest(returns, weights, monthly_investment):
-    cum_value = []
+def backtest(returns, weights, monthly):
     total_value = 0
+    values = []
     for i in range(len(returns)):
         r = returns.iloc[i]
-        total_value = (total_value + monthly_investment) * (1 + r @ weights)
-        cum_value.append(total_value)
-    return pd.Series(cum_value, index=returns.index)
+        total_value = (total_value + monthly) * (1 + r @ weights)
+        values.append(total_value)
+    return pd.Series(values, index=returns.index)
 
-backtest = simulate_backtest(returns, allocations, investment_amount)
-final_value = backtest.iloc[-1]
+backtest_result = backtest(returns, allocations, investment_amount)
 total_invested = investment_amount * len(returns)
+final_value = backtest_result.iloc[-1]
 gain = final_value - total_invested
-sharpe = (returns @ allocations).mean() / (returns @ allocations).std()
+sharpe_ratio = (returns @ allocations).mean() / (returns @ allocations).std()
 
 # E-mail küldés
 date_str = datetime.today().strftime("%Y-%m-%d")
-result_lines = [f"Napi kvantum-optimalizált DCA javaslat – {date_str}\n"]
-for i, ticker in enumerate(returns.columns):
-    result_lines.append(f"{ticker}: {allocations[i]*100:.2f}% → {alloc_eur[i]:.2f} €")
-result_lines.append("\nVisszatesztelés (elmúlt ~6 hónap):")
-result_lines.append(f"Összes befektetés: {total_invested:.2f} €")
-result_lines.append(f"Portfólió érték: {final_value:.2f} €")
-result_lines.append(f"Nyereség: {gain:.2f} €")
-result_lines.append(f"Sharpe-ráta: {sharpe:.2f}")
-
-msg = MIMEText("\n".join(result_lines))
-msg["Subject"] = f"Napi DCA javaslat ({date_str})"
-msg["From"] = sender_email
-msg["To"] = receiver_email
-
-with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-    server.login(sender_email, password)
-    server.send_message(msg)
+lines = [f"Napi kvantum-optimalizált DCA javaslat – {date_str}\n"]
+for i, n

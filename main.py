@@ -1,96 +1,86 @@
-import yfinance as yf
+import os
 import pandas as pd
 import numpy as np
-import smtplib
-from email.mime.text import MIMEText
-import os
-import datetime
 import cvxpy as cp
+import requests
+from datetime import datetime
+from email.mime.text import MIMEText
+import smtplib
 
-# Konfiguráció
-symbols = ["RHM.DE", "SIE.DE", "ASML.AS", "EDM6.DE"]
-symbol_names = ["RHM", "SIE", "ASME", "EDM6"]
+# Paraméterek
+symbols = {
+    "RHM.FRK": "RHM",
+    "SIE.FRK": "SIE",
+    "ASME.FRK": "ASME",
+    "EDM6.FRK": "EDM6"
+}
 investment_amount = 100
-lookback_days = 126  # ~6 hónap
-receiver_email = "istvan.kissm@gmail.com"
+alpha_vantage_api_key = os.getenv("ALPHA_VANTAGE_KEY")
 sender_email = "istvan.kissm@gmail.com"
-email_password = os.environ.get("EMAIL_PASSWORD")
+receiver_email = "istvan.kissm@gmail.com"
+password = os.getenv("EMAIL_PASSWORD")
+
+def fetch_alpha_vantage(symbol):
+    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={symbol}&apikey={alpha_vantage_api_key}&outputsize=compact"
+    response = requests.get(url)
+    data = response.json()
+    time_series = data.get("Time Series (Daily)", {})
+    return pd.Series({pd.to_datetime(date): float(value["5. adjusted close"]) for date, value in time_series.items()})
 
 # Adatok letöltése
+prices = {}
+for symbol in symbols:
+    series = fetch_alpha_vantage(symbol)
+    if not series.empty:
+        prices[symbols[symbol]] = series
 
-data = yf.download(symbols, period="6mo")["Close"]
+# Árak összeállítása
+df = pd.DataFrame(prices).sort_index()
+returns = df.pct_change().dropna()
 
-# Töröljük azokat az oszlopokat, ahol nem sikerült lekérni az adatot
-data = data.dropna(axis=1, how="any")
-
-# Ellenőrizzük, hogy legalább 2 eszköz maradt-e
-if data.shape[1] < 2:
-    raise ValueError("Nem elég adat az optimalizáláshoz. Ellenőrizd a szimbólumokat vagy próbáld újra később.")
-
-# Kovariancia mátrix és ellenőrzése
-returns = data.pct_change().dropna()
-cov = returns.cov()
-
-if cov.shape[0] != cov.shape[1] or not np.allclose(cov, cov.T, atol=1e-8):
-    raise ValueError("A kovariancia mátrix nem szimmetrikus vagy érvénytelen.")
-
-
-# Várható hozam és kovariancia
-mu = returns.mean()
-cov = returns.cov()
-
-# Kvantum-inspirált optimalizáció (Sharpe-maximalizálás)
-w = cp.Variable(len(symbols))
-ret = mu.values @ w
-risk = cp.quad_form(w, cov.values)
-gamma = cp.Parameter(nonneg=True)
-gamma.value = 1
-
-problem = cp.Problem(cp.Maximize(ret - gamma * risk),
-                     [cp.sum(w) == 1, w >= 0])
-problem.solve()
+# Kvantum optimalizálás (Sharpe-ráta alapján)
+w = cp.Variable(len(returns.columns))
+risk = cp.quad_form(w, returns.cov().values)
+ret = returns.mean().values @ w
+prob = cp.Problem(cp.Maximize(ret / cp.sqrt(risk)), [cp.sum(w) == 1, w >= 0])
+prob.solve()
 
 weights = w.value
-allocations = np.round(weights * investment_amount, 2)
+allocations = weights / weights.sum()
+alloc_eur = allocations * investment_amount
 
-# Eredmény összeállítás
-date_str = datetime.date.today().strftime("%Y-%m-%d")
-result_lines = [f"Napi kvantum-optimalizált DCA javaslat – {date_str}\\n"]
-
-for name, weight, amount in zip(symbol_names, weights, allocations):
-    result_lines.append(f"{name}: {weight:.2%} → {amount:.2f} €")
-
-# Visszatesztelés – szimulált portfólió
-def simulate_backtest(returns, weights, investment_amount):
-    daily_investment = investment_amount
+# Visszatesztelés
+def simulate_backtest(returns, weights, monthly_investment):
     cum_value = []
     total_value = 0
     for i in range(len(returns)):
         r = returns.iloc[i]
-        growth = 1 + (r @ weights)
-        total_value = (total_value + daily_investment) * growth
+        total_value = (total_value + monthly_investment) * (1 + r @ weights)
         cum_value.append(total_value)
     return pd.Series(cum_value, index=returns.index)
 
-backtest = simulate_backtest(returns, weights, investment_amount)
+backtest = simulate_backtest(returns, allocations, investment_amount)
 final_value = backtest.iloc[-1]
 total_invested = investment_amount * len(returns)
 gain = final_value - total_invested
-sharpe = (returns @ weights).mean() / (returns @ weights).std() * np.sqrt(252)
+sharpe = (returns @ allocations).mean() / (returns @ allocations).std()
 
-result_lines.append(f"\nVisszatesztelés (elmúlt ~6 hónap):")
+# E-mail küldés
+date_str = datetime.today().strftime("%Y-%m-%d")
+result_lines = [f"Napi kvantum-optimalizált DCA javaslat – {date_str}\n"]
+for i, ticker in enumerate(returns.columns):
+    result_lines.append(f"{ticker}: {allocations[i]*100:.2f}% → {alloc_eur[i]:.2f} €")
+result_lines.append("\nVisszatesztelés (elmúlt ~6 hónap):")
 result_lines.append(f"Összes befektetés: {total_invested:.2f} €")
 result_lines.append(f"Portfólió érték: {final_value:.2f} €")
 result_lines.append(f"Nyereség: {gain:.2f} €")
 result_lines.append(f"Sharpe-ráta: {sharpe:.2f}")
 
-# E-mail küldés
 msg = MIMEText("\n".join(result_lines))
 msg["Subject"] = f"Napi DCA javaslat ({date_str})"
 msg["From"] = sender_email
 msg["To"] = receiver_email
 
-with smtplib.SMTP("smtp.gmail.com", 587) as server:
-    server.starttls()
-    server.login(sender_email, email_password)
+with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+    server.login(sender_email, password)
     server.send_message(msg)

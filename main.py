@@ -85,10 +85,28 @@ total_invested = investment_amount * len(returns)
 gain = final_value - total_invested
 sharpe = (returns @ allocations).mean() / (returns @ allocations).std()
 
+
 # E-mail küldés
 date_str = datetime.today().strftime("%Y-%m-%d")
 lines = [f"Napi kvantum-optimalizált DCA javaslat – {date_str}\n"]
-for i, name in
+for i, name in enumerate(returns.columns):
+    lines.append(f"{name}: {allocations[i]*100:.2f}% → {alloc_eur[i]:.2f} €")
+lines.append("\nVisszatesztelés (~6 hónap):")
+lines.append(f"Összes befektetés: {total_invested:.2f} €")
+lines.append(f"Portfólió érték: {final_value:.2f} €")
+lines.append(f"Nyereség: {gain:.2f} €")
+lines.append(f"Sharpe-ráta: {sharpe:.2f}")
+
+msg = MIMEText("\n".join(lines))
+msg["Subject"] = f"Napi DCA javaslat ({date_str})"
+msg["From"] = sender_email
+msg["To"] = receiver_email
+
+with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+    server.login(sender_email, email_password)
+    server.send_message(msg)
+
+print("✅ E-mail elküldve.")
 
 
 

@@ -16,7 +16,12 @@ symbols = {
     "EDM6.FRK": "EDM6"
 }
 
-symbols = ["AAPL", "MSFT", "GOOG", "SPY"]
+symbols = {
+    "AAPL": "AAPL",
+    "MSFT": "MSFT",
+    "GOOG": "GOOG",
+    "SPY": "SPY"
+}
 
 
 

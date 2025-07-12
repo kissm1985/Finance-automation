@@ -40,7 +40,8 @@ allocations = np.round(weights * investment_amount, 2)
 
 # Eredmény összeállítás
 date_str = datetime.date.today().strftime("%Y-%m-%d")
-result_lines = [f"Napi kvantum-optimalizált DCA javaslat – {date_str}
+result_lines = [f"Napi kvantum-optimalizált DCA javaslat – {date_str}\\n"]
+
 "]
 for name, weight, amount in zip(symbol_names, weights, allocations):
     result_lines.append(f"{name}: {weight:.2%} → {amount:.2f} €")

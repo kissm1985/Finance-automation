@@ -1,59 +1,94 @@
 import os
 import pandas as pd
 import numpy as np
-import yfinance as yf
 import cvxpy as cp
+import requests
 from datetime import datetime
 from email.mime.text import MIMEText
 import smtplib
 
 # Paraméterek
 symbols = {
-    "RHM.DE": "Rheinmetall",
-    "SIE.DE": "Siemens",
-    "ASML.AS": "ASML",
-    "EDM6.DE": "iShares ESG ETF"
+    "RHM.DE": "RHM",   # Rheinmetall AG
+    "SIE.DE": "SIE",   # Siemens AG
+    "ASML.AS": "ASME", # ASML Holding
+    "EDM6.DE": "EDM6"  # iShares ETF
 }
-
 investment_amount = 100
+api_token = os.getenv("EOD_API_KEY")
 sender_email = "istvan.kissm@gmail.com"
 receiver_email = "istvan.kissm@gmail.com"
-password = os.getenv("EMAIL_PASSWORD")
+email_password = os.getenv("EMAIL_PASSWORD")
+
+# EOD API-ból adatok letöltése
+def fetch_eod_data(symbol):
+    url = f"https://eodhistoricaldata.com/api/eod/{symbol}?api_token={api_token}&period=d&fmt=json&from=2025-01-01"
+    response = requests.get(url)
+    if response.status_code != 200:
+        print(f"⚠️ Hiba a(z) {symbol} lekérésekor: {response.status_code}")
+        return pd.Series()
+    try:
+        raw_data = response.json()
+        series = pd.Series({
+            pd.to_datetime(day["date"]): day["adjusted_close"]
+            for day in raw_data if "adjusted_close" in day
+        })
+        return series.sort_index()
+    except Exception as e:
+        print(f"⚠️ Hiba a JSON feldolgozásakor {symbol}: {e}")
+        return pd.Series()
 
 # Adatok letöltése
-data = yf.download(list(symbols.keys()), period="6mo")["Close"].dropna()
-data.columns = [symbols.get(t, t) for t in data.columns]
-returns = data.pct_change().dropna()
+prices = {}
+for symbol, name in symbols.items():
+    print(f"Letöltés: {symbol}")
+    series = fetch_eod_data(symbol)
+    if not series.empty:
+        prices[name] = series
+    else:
+        print(f"⚠️ Nincs adat a {name} részvényre!")
 
-# Optimalizálás – Sharpe-ráta
+# DataFrame összeállítása
+df = pd.DataFrame(prices).dropna(how="any")
+returns = df.pct_change().dropna()
+
+# Ha nincs adat, leáll
+if returns.empty:
+    print("⚠️ Nincs elég adat a portfólió optimalizáláshoz.")
+    exit()
+
+# Kvantumoptimalizálás – Sharpe-ráta
 w = cp.Variable(len(returns.columns))
 expected_return = returns.mean().values @ w
 risk = cp.quad_form(w, returns.cov().values)
-problem = cp.Problem(cp.Maximize(expected_return / cp.sqrt(risk)), [cp.sum(w) == 1, w >= 0])
-problem.solve()
+prob = cp.Problem(cp.Maximize(expected_return / cp.sqrt(risk)),
+                  [cp.sum(w) == 1, w >= 0])
+prob.solve()
 
-# Allokáció
 weights = w.value
 allocations = weights / weights.sum()
 alloc_eur = allocations * investment_amount
 
 # Visszatesztelés
-def backtest(returns, weights, monthly):
-    total_value = 0
-    values = []
+def simulate_backtest(returns, weights, monthly_investment):
+    value = []
+    total = 0
     for i in range(len(returns)):
         r = returns.iloc[i]
-        total_value = (total_value + monthly) * (1 + r @ weights)
-        values.append(total_value)
-    return pd.Series(values, index=returns.index)
+        total = (total + monthly_investment) * (1 + r @ weights)
+        value.append(total)
+    return pd.Series(value, index=returns.index)
 
-backtest_result = backtest(returns, allocations, investment_amount)
+backtest = simulate_backtest(returns, allocations, investment_amount)
+final_value = backtest.iloc[-1]
 total_invested = investment_amount * len(returns)
-final_value = backtest_result.iloc[-1]
 gain = final_value - total_invested
-sharpe_ratio = (returns @ allocations).mean() / (returns @ allocations).std()
+sharpe = (returns @ allocations).mean() / (returns @ allocations).std()
 
 # E-mail küldés
 date_str = datetime.today().strftime("%Y-%m-%d")
 lines = [f"Napi kvantum-optimalizált DCA javaslat – {date_str}\n"]
-for i, n
+for i, name in
+
+
+

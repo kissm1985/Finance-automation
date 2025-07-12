@@ -31,12 +31,20 @@ sender_email = "istvan.kissm@gmail.com"
 receiver_email = "istvan.kissm@gmail.com"
 password = os.getenv("EMAIL_PASSWORD")
 
+
+    
 def fetch_alpha_vantage(symbol):
     url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={symbol}&apikey={alpha_vantage_api_key}&outputsize=compact"
     response = requests.get(url)
     data = response.json()
-    time_series = data.get("Time Series (Daily)", {})
+
+    if "Time Series (Daily)" not in data:
+        print(f"⚠️ Nincs adat a {symbol} részvényre! Válasz: {data}")
+        return pd.Series(dtype=float)
+
+    time_series = data["Time Series (Daily)"]
     return pd.Series({pd.to_datetime(date): float(value["5. adjusted close"]) for date, value in time_series.items()})
+
 
 
 # Adatok letöltése

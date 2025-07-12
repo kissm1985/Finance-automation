@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import cvxpy as cp
 import requests
+import time
 from datetime import datetime
 from email.mime.text import MIMEText
 import smtplib
@@ -14,6 +15,11 @@ symbols = {
     "ASME.FRK": "ASME",
     "EDM6.FRK": "EDM6"
 }
+
+symbols = ["AAPL", "MSFT", "GOOG", "SPY"]
+
+
+
 investment_amount = 100
 alpha_vantage_api_key = os.getenv("ALPHA_VANTAGE_KEY")
 sender_email = "istvan.kissm@gmail.com"
@@ -32,6 +38,7 @@ def fetch_alpha_vantage(symbol):
 prices = {}
 for symbol in symbols:
     series = fetch_alpha_vantage(symbol)
+    time.sleep(15)
     if not series.empty:
         prices[symbols[symbol]] = series
 

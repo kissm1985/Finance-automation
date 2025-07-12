@@ -9,11 +9,14 @@ import smtplib
 
 # Paraméterek
 symbols = {
-    "RHM.DE": "RHM",   # Rheinmetall AG
-    "SIE.DE": "SIE",   # Siemens AG
-    "ASML.AS": "ASME", # ASML Holding
-    "EDM6.DE": "EDM6"  # iShares ETF
+
+
+    "AAPL.US": AAPL",   # Rheinmetall AG
+    "TSLA.US": TSLA"
 }
+
+
+
 investment_amount = 100
 api_token = os.getenv("EOD_API_KEY")
 sender_email = "istvan.kissm@gmail.com"

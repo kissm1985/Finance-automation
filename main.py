@@ -17,7 +17,8 @@ sender_email = "istvan.kissm@gmail.com"
 email_password = os.environ.get("EMAIL_PASSWORD")
 
 # Adatok letöltése
-data = yf.download(symbols, period="6mo")["Adj Close"].dropna()
+data = yf.download(symbols, period="6mo")["Close"].dropna(axis=0, how="any")
+
 returns = data.pct_change().dropna()
 
 # Várható hozam és kovariancia

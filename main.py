@@ -17,13 +17,24 @@ sender_email = "istvan.kissm@gmail.com"
 email_password = os.environ.get("EMAIL_PASSWORD")
 
 # Adatok letöltése
-data = yf.download(symbols, period="6mo")["Close"].dropna(axis=0, how="any")
+
 data = yf.download(symbols, period="6mo")["Close"]
-data = data.dropna(axis=1, how="any")  # csak azok a szimbólumok maradnak, amelyeknél sikeres volt a letöltés
 
+# Töröljük azokat az oszlopokat, ahol nem sikerült lekérni az adatot
+data = data.dropna(axis=1, how="any")
 
+# Ellenőrizzük, hogy legalább 2 eszköz maradt-e
+if data.shape[1] < 2:
+    raise ValueError("Nem elég adat az optimalizáláshoz. Ellenőrizd a szimbólumokat vagy próbáld újra később.")
+
+# Kovariancia mátrix és ellenőrzése
 returns = data.pct_change().dropna()
+cov = returns.cov()
 
+if cov.shape[0] != cov.shape[1] or not np.allclose(cov, cov.T, atol=1e-8):
+    raise ValueError("A kovariancia mátrix nem szimmetrikus vagy érvénytelen.")
+
+m
 # Várható hozam és kovariancia
 mu = returns.mean()
 cov = returns.cov()

@@ -11,8 +11,8 @@ import smtplib
 symbols = {
 
 
-    "AAPL.US": AAPL",   # Rheinmetall AG
-    "TSLA.US": TSLA"
+    "AAPL.US": "AAPL",   # Rheinmetall AG
+    "TSLA.US": "TSLA"
 }
 
 

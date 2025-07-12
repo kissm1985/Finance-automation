@@ -34,7 +34,7 @@ cov = returns.cov()
 if cov.shape[0] != cov.shape[1] or not np.allclose(cov, cov.T, atol=1e-8):
     raise ValueError("A kovariancia mátrix nem szimmetrikus vagy érvénytelen.")
 
-m
+
 # Várható hozam és kovariancia
 mu = returns.mean()
 cov = returns.cov()

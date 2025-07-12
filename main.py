@@ -39,10 +39,7 @@ for symbol in symbols:
 df = pd.DataFrame(prices).sort_index()
 returns = df.pct_change().dropna()
 
-print(data.head())
-print("Shape of returns:", returns.shape)
-
-
+print(df.head())
 
 # Kvantum optimalizálás (Sharpe-ráta alapján)
 w = cp.Variable(len(returns.columns))

@@ -27,6 +27,10 @@ def fetch_alpha_vantage(symbol):
     time_series = data.get("Time Series (Daily)", {})
     return pd.Series({pd.to_datetime(date): float(value["5. adjusted close"]) for date, value in time_series.items()})
 
+print(data.head())
+print("Shape of returns:", returns.shape)
+
+
 # Adatok letöltése
 prices = {}
 for symbol in symbols:

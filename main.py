@@ -18,6 +18,9 @@ email_password = os.environ.get("EMAIL_PASSWORD")
 
 # Adatok letöltése
 data = yf.download(symbols, period="6mo")["Close"].dropna(axis=0, how="any")
+data = yf.download(symbols, period="6mo")["Close"]
+data = data.dropna(axis=1, how="any")  # csak azok a szimbólumok maradnak, amelyeknél sikeres volt a letöltés
+
 
 returns = data.pct_change().dropna()
 

@@ -1,1 +1,112 @@
-f
+import os
+import pandas as pd
+import numpy as np
+import cvxpy as cp
+import requests
+from datetime import datetime
+from email.mime.text import MIMEText
+import smtplib
+
+# Paraméterek
+symbols = {
+
+
+    "AAPL.US": "AAPL",   # Rheinmetall AG
+    "TSLA.US": "TSLA"
+}
+
+
+
+investment_amount = 100
+api_token = os.getenv("EOD_API_KEY")
+sender_email = "istvan.kissm@gmail.com"
+receiver_email = "istvan.kissm@gmail.com"
+email_password = os.getenv("EMAIL_PASSWORD")
+
+# EOD API-ból adatok letöltése
+def fetch_eod_data(symbol):
+    url = f"https://eodhistoricaldata.com/api/eod/{symbol}?api_token={api_token}&period=d&fmt=json&from=2025-01-01"
+    response = requests.get(url)
+    if response.status_code != 200:
+        print(f"⚠️ Hiba a(z) {symbol} lekérésekor: {response.status_code}")
+        return pd.Series()
+    try:
+        raw_data = response.json()
+        series = pd.Series({
+            pd.to_datetime(day["date"]): day["adjusted_close"]
+            for day in raw_data if "adjusted_close" in day
+        })
+        return series.sort_index()
+    except Exception as e:
+        print(f"⚠️ Hiba a JSON feldolgozásakor {symbol}: {e}")
+        return pd.Series()
+
+# Adatok letöltése
+prices = {}
+for symbol, name in symbols.items():
+    print(f"Letöltés: {symbol}")
+    series = fetch_eod_data(symbol)
+    if not series.empty:
+        prices[name] = series
+    else:
+        print(f"⚠️ Nincs adat a {name} részvényre!")
+
+# DataFrame összeállítása
+df = pd.DataFrame(prices).dropna(how="any")
+returns = df.pct_change().dropna()
+
+# Ha nincs adat, leáll
+if returns.empty:
+    print("⚠️ Nincs elég adat a portfólió optimalizáláshoz.")
+    exit()
+
+# Kvantumoptimalizálás – Sharpe-ráta
+w = cp.Variable(len(returns.columns))
+expected_return = returns.mean().values @ w
+risk = cp.quad_form(w, returns.cov().values)
+prob = cp.Problem(cp.Maximize(expected_return / cp.sqrt(risk)),
+                  [cp.sum(w) == 1, w >= 0])
+prob.solve()
+
+weights = w.value
+allocations = weights / weights.sum()
+alloc_eur = allocations * investment_amount
+
+# Visszatesztelés
+def simulate_backtest(returns, weights, monthly_investment):
+    value = []
+    total = 0
+    for i in range(len(returns)):
+        r = returns.iloc[i]
+        total = (total + monthly_investment) * (1 + r @ weights)
+        value.append(total)
+    return pd.Series(value, index=returns.index)
+
+backtest = simulate_backtest(returns, allocations, investment_amount)
+final_value = backtest.iloc[-1]
+total_invested = investment_amount * len(returns)
+gain = final_value - total_invested
+sharpe = (returns @ allocations).mean() / (returns @ allocations).std()
+
+
+# E-mail küldés
+date_str = datetime.today().strftime("%Y-%m-%d")
+lines = [f"Napi kvantum-optimalizált DCA javaslat – {date_str}\n"]
+for i, name in enumerate(returns.columns):
+    lines.append(f"{name}: {allocations[i]*100:.2f}% → {alloc_eur[i]:.2f} €")
+lines.append("\nVisszatesztelés (~6 hónap):")
+lines.append(f"Összes befektetés: {total_invested:.2f} €")
+lines.append(f"Portfólió érték: {final_value:.2f} €")
+lines.append(f"Nyereség: {gain:.2f} €")
+lines.append(f"Sharpe-ráta: {sharpe:.2f}")
+
+msg = MIMEText("\n".join(lines))
+msg["Subject"] = f"Napi DCA javaslat ({date_str})"
+msg["From"] = sender_email
+msg["To"] = receiver_email
+
+with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+    server.login(sender_email, email_password)
+    server.send_message(msg)
+
+print("✅ E-mail elküldve.")

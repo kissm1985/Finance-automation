@@ -1,14 +1,15 @@
-name: Run Python script
+name: Run EUR Rate Script
 
 on:
-  workflow_dispatch:  # kézzel indítható
   push:
     paths:
-      - '**.py'
+      - 'eur_rate.py'
+  workflow_dispatch:
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
+
     steps:
       - name: Kód letöltése
         uses: actions/checkout@v3
@@ -18,5 +19,9 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Kötelező csomagok telepítése
+        run: pip install requests
+
       - name: Script futtatása
-        run: python eur_rate.py  # itt változtatjuk mindig
+        run: python eur_rate.py
+

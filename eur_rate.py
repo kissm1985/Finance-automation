@@ -1,5 +1,6 @@
 
 import requests
+import html
 import xml.etree.ElementTree as ET
 
 # MNB árfolyam lekérdezés
@@ -24,7 +25,9 @@ response.raise_for_status()
 root = ET.fromstring(response.text)
 ns = {"mnb": "http://www.mnb.hu/webservices/"}
 rates_xml = root.find(".//mnb:GetCurrentExchangeRatesResult", ns)
-rates_root = ET.fromstring(rates_xml.text)
+
+cleaned_xml = html.unescape(rates_xml.text)
+rates_root = ET.fromstring(cleaned_xml)
 
 eur_rate = None
 for row in rates_root.findall("Day/Rate"):

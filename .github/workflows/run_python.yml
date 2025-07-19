@@ -19,4 +19,4 @@ jobs:
           python-version: '3.11'
 
       - name: Script futtatása
-        run: python euro_rate.py  # itt változtatjuk mindig
+        run: python eur_rate.py  # itt változtatjuk mindig

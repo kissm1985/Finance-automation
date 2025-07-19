@@ -1,1 +1,1 @@
-# finance_automation
+# Finance automation

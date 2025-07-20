@@ -24,10 +24,29 @@ jobs:
     - name: Script futtatása
       run: python main.py
 
-    - name: Eredményfájlok mentése
-      uses: actions/upload-artifact@v4
+    - name: Fájlok listázása
+      run: ls -lah
+
+    - name: E-mail küldése az eredményekkel
+      uses: dawidd6/action-send-mail@v3
       with:
-        name: dca-results
-        path: |
-          results/buy_log.txt
-          results/backtest_summary.txt
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: ${{ secrets.MAIL_USERNAME }}
+        password: ${{ secrets.MAIL_PASSWORD }}
+        subject: Kvantum DCA eredmények
+        to: ${{ secrets.MAIL_RECEIVER }}
+        from: Kvantum Portfólió Optimalizáló
+        content_type: text/plain
+        body: |
+          Kedves István,
+
+          A kvantum-alapú DCA szimuláció és visszateszt lefutott.
+
+          A csatolt fájlokban találod a vásárlási naplót és az összefoglalót.
+
+          Üdv,
+          GitHub Actions bot
+        attachments: |
+          buy_log.txt
+          backtest_summary.txt

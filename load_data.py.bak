@@ -2,24 +2,22 @@ import os
 import pandas as pd
 from config import DATA_DIR
 
-
-
 def load_price_data(file_path):
     df = pd.read_csv(file_path)
     df["Date"] = pd.to_datetime(df["Date"])
     df = df.set_index("Date")
     df = df.sort_index()
 
-    # Elfogadott oszlopnevek
-    for col in ["Close", "Adj Close", "Záróár"]:
+    # Elfogadott oszlopnevek (leggyakoribbak CSV-kben)
+    price_cols = ["Close", "Adj Close", "Záróár", "Zaroar"]
+
+    for col in price_cols:
         if col in df.columns:
-            df = df[[col]].rename(columns={col: os.path.splitext(os.path.basename(file_path))[0]})
+            symbol = os.path.splitext(os.path.basename(file_path))[0]
+            df = df[[col]].rename(columns={col: symbol})
             return df
 
     raise ValueError(f"Nincs 'Close' vagy 'Adj Close' oszlop a fájlban: {file_path}")
-
-
-
 
 def load_all_price_data():
     all_files = [f for f in os.listdir(DATA_DIR) if f.endswith(".csv")]

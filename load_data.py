@@ -8,8 +8,8 @@ def load_price_data(file_path):
     df = df.set_index("Date")
     df = df.sort_index()
 
-    # Elfogadott oszlopnevek (leggyakoribbak CSV-kben)
-    price_cols = ["Close", "Adj Close", "Záróár", "Zaroar"]
+    # Elfogadott oszlopnevek – frissítve: tartalmazza a "Price"-t is
+    price_cols = ["Price", "Close", "Adj Close", "Záróár", "Zaroar"]
 
     for col in price_cols:
         if col in df.columns:
@@ -17,7 +17,7 @@ def load_price_data(file_path):
             df = df[[col]].rename(columns={col: symbol})
             return df
 
-    raise ValueError(f"Nincs 'Close' vagy 'Adj Close' oszlop a fájlban: {file_path}")
+    raise ValueError(f"Nincs használható árfolyam oszlop a fájlban: {file_path}")
 
 def load_all_price_data():
     all_files = [f for f in os.listdir(DATA_DIR) if f.endswith(".csv")]

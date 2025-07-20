@@ -15,6 +15,10 @@ price_data = load_all_price_data()
 print("⚙️ Portfólió optimalizálása...")
 optimal_weights = optimize_portfolio(price_data)
 
+print("📊 Optimalizált súlyok:")
+for symbol, weight in optimal_weights.items():
+    print(f"{symbol}: {weight:.4f}")
+
 # --- 3. DCA stratégia futtatása
 print("💰 DCA stratégia futtatása...")
 buy_log = apply_dca_strategy(price_data, optimal_weights, sell_signals=[])

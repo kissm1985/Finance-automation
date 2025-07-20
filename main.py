@@ -13,7 +13,7 @@ optimal_weights = optimize_portfolio(price_data)
 
 # --- 3. DCA stratégia futtatása
 print("💰 DCA stratégia futtatása...")
-buy_log, dca_summary = apply_dca_strategy(price_data, optimal_weights, sell_signals=[])
+buy_log = apply_dca_strategy(price_data, optimal_weights, sell_signals=[])
 
 # --- 4. Visszateszt futtatása
 print("📈 Visszateszt futtatása...")

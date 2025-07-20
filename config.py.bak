@@ -14,8 +14,3 @@ DATA_DIR = "data"
 
 # 📁 Riport- és naplómappa
 RESULTS_DIR = "results"
-
-
-EMAIL_SENDER = "istvan.kissm@gmail.com"
-EMAIL_RECEIVER = "istvan.kissm@gmail.com"
-EMAIL_PASSWORD = "yfvo obyv ifrn yoyq"  # Gmailben létrehozott app-jelszó

@@ -17,7 +17,7 @@ buy_log = apply_dca_strategy(price_data, optimal_weights, sell_signals=[])
 
 # --- 4. Visszateszt futtatása
 print("📈 Visszateszt futtatása...")
-backtest_summary = run_backtest(price_data, optimal_weights)
+backtest_summary = run_backtest(price_data)
 
 # --- 5. Eredmények fájlba írása
 print("💾 Eredmények mentése fájlba...")

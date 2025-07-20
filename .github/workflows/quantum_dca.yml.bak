@@ -27,14 +27,20 @@ jobs:
     - name: Vásárlási napló beolvasása
       id: buylog
       run: |
-        echo "buylog=$(cat results/buy_log.txt | base64)" >> $GITHUB_OUTPUT
+        {
+          echo "buylog<<EOF"
+          cat results/buy_log.txt
+          echo "EOF"
+        } >> "$GITHUB_OUTPUT"
 
     - name: Visszateszt összefoglaló beolvasása
       id: backtest
       run: |
-        echo "backtest<<EOF" >> $GITHUB_OUTPUT
-        cat results/backtest_summary.txt >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
+        {
+          echo "backtest<<EOF"
+          cat results/backtest_summary.txt
+          echo "EOF"
+        } >> "$GITHUB_OUTPUT"
 
     - name: E-mail küldése
       uses: dawidd6/action-send-mail@v3

@@ -28,8 +28,6 @@ def optimize_portfolio(price_data):
     )
     
 
-    
-
     if not result.success:
         raise ValueError("Optimalizáció sikertelen: " + result.message)
 
@@ -38,40 +36,52 @@ def optimize_portfolio(price_data):
     
 
     if debug:
-        # Részletes statisztikák
-        avg_returns = returns.mean()
-        std_devs = returns.std()
-        cov_matrix = returns.cov()
-        correlation = returns.corr()
-        sharpe = -sharpe_ratio(weights, returns)
-
-        debug_output = []
-        debug_output.append("📈 RÉSZLETES OPTIMALIZÁCIÓS STATISZTIKÁK")
-        debug_output.append("-" * 40)
-
-        debug_output.append("\n🔢 Átlaghozamok:")
-        debug_output.append(avg_returns.to_string())
-
-        debug_output.append("\n📉 Szórások:")
-        debug_output.append(std_devs.to_string())
-
-        debug_output.append("\n📊 Kovariancia mátrix:")
-        debug_output.append(cov_matrix.to_string())
-
-        debug_output.append("\n🔗 Korrelációs mátrix:")
-        debug_output.append(correlation.to_string())
-
-        debug_output.append("\n📌 Optimalizált súlyok:")
-        for k, v in weight_dict.items():
-            debug_output.append(f"{k}: {v:.4f}")
-
-        debug_output.append(f"\n⭐ Sharpe-ráta: {sharpe:.4f}")
-
-        # Írás fájlba
-        os.makedirs(RESULTS_DIR, exist_ok=True)
-        with open(os.path.join(RESULTS_DIR, "optimization_debug.txt"), "w", encoding="utf-8") as f:
-            f.write("\n".join(debug_output))
-
-        print("📝 Debug statisztikák mentve: results/optimization_debug.txt")
+        os.makedirs("results", exist_ok=True)
+        with open("results/optimal_weights.txt", "w", encoding="utf-8") as f:
+            f.write("🔍 Optimalizált súlyok:\n")
+            for symbol, weight in weight_dict.items():
+                f.write(f"{symbol}: {weight:.4f}\n")
+        print("📁 optimal_weights.txt mentve a results/ mappába.")
 
     return weight_dict
+
+
+
+    # if debug:
+        # # Részletes statisztikák
+        # avg_returns = returns.mean()
+        # std_devs = returns.std()
+        # cov_matrix = returns.cov()
+        # correlation = returns.corr()
+        # sharpe = -sharpe_ratio(weights, returns)
+
+        # debug_output = []
+        # debug_output.append("📈 RÉSZLETES OPTIMALIZÁCIÓS STATISZTIKÁK")
+        # debug_output.append("-" * 40)
+
+        # debug_output.append("\n🔢 Átlaghozamok:")
+        # debug_output.append(avg_returns.to_string())
+
+        # debug_output.append("\n📉 Szórások:")
+        # debug_output.append(std_devs.to_string())
+
+        # debug_output.append("\n📊 Kovariancia mátrix:")
+        # debug_output.append(cov_matrix.to_string())
+
+        # debug_output.append("\n🔗 Korrelációs mátrix:")
+        # debug_output.append(correlation.to_string())
+
+        # debug_output.append("\n📌 Optimalizált súlyok:")
+        # for k, v in weight_dict.items():
+            # debug_output.append(f"{k}: {v:.4f}")
+
+        # debug_output.append(f"\n⭐ Sharpe-ráta: {sharpe:.4f}")
+
+        # # Írás fájlba
+        # os.makedirs(RESULTS_DIR, exist_ok=True)
+        # with open(os.path.join(RESULTS_DIR, "optimization_debug.txt"), "w", encoding="utf-8") as f:
+            # f.write("\n".join(debug_output))
+
+        # print("📝 Debug statisztikák mentve: results/optimization_debug.txt")
+
+    # return weight_dict

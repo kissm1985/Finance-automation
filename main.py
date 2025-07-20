@@ -25,8 +25,7 @@ print("💾 Eredmények mentése fájlba...")
 with open("buy_log.txt", "w") as f:
     f.write("Vásárlási napló (DCA):\n")
     f.write(buy_log)
-    f.write("\n\nÖsszefoglaló:\n")
-    f.write(dca_summary)
+
 
 with open("backtest_summary.txt", "w") as f:
     f.write("Visszateszt összefoglaló:\n")

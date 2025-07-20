@@ -32,3 +32,32 @@ with open("backtest_summary.txt", "w") as f:
     f.write(backtest_summary)
 
 print("✅ Kész: Eredmények mentve.")
+
+
+# ✉️ E-mail küldése
+msg = EmailMessage()
+msg["Subject"] = "Kvantum DCA eredmények"
+msg["From"] = EMAIL_SENDER
+msg["To"] = EMAIL_RECEIVER
+
+msg.set_content(f"""\
+Kedves István,
+
+✅ A kvantum-alapú DCA szimuláció és visszateszt lefutott. Itt vannak az eredmények:
+
+📘 Vásárlási napló:
+{buy_log}
+
+📈 Visszateszt összefoglaló:
+{backtest_summary}
+
+Üdvözlettel:
+GitHub Actions bot
+""")
+
+print("📤 E-mail küldése...")
+with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+    smtp.login(EMAIL_SENDER, EMAIL_PASSWORD)
+    smtp.send_message(msg)
+
+print("✅ E-mail elküldve.")

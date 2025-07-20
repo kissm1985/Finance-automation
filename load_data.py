@@ -8,13 +8,24 @@ def load_price_data(file_path):
     df = df.set_index("Date")
     df = df.sort_index()
 
-    # Elfogadott oszlopnevek – frissítve: tartalmazza a "Price"-t is
     price_cols = ["Price", "Close", "Adj Close", "Záróár", "Zaroar"]
 
     for col in price_cols:
         if col in df.columns:
             symbol = os.path.splitext(os.path.basename(file_path))[0]
             df = df[[col]].rename(columns={col: symbol})
+
+            # Konvertálás numerikussá
+            df[symbol] = (
+                df[symbol]
+                .astype(str)
+                .str.replace(",", "", regex=False)
+                .str.replace(" ", "", regex=False)
+                .str.replace("€", "", regex=False)
+            )
+            df[symbol] = pd.to_numeric(df[symbol], errors="coerce")
+            df = df.dropna(subset=[symbol])
+
             return df
 
     raise ValueError(f"Nincs használható árfolyam oszlop a fájlban: {file_path}")

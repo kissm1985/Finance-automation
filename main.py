@@ -15,10 +15,6 @@ price_data = load_all_price_data()
 print("⚙️ Portfólió optimalizálása...")
 optimal_weights = optimize_portfolio(price_data)
 
-print("📊 Optimalizált súlyok:")
-for symbol, weight in optimal_weights.items():
-    print(f"{symbol}: {weight:.4f}")
-
 # --- 3. DCA stratégia futtatása
 print("💰 DCA stratégia futtatása...")
 buy_log = apply_dca_strategy(price_data, optimal_weights, sell_signals=[])
@@ -41,6 +37,9 @@ with open("backtest_summary.txt", "w") as f:
 
 print("✅ Kész: Eredmények mentve.")
 
+# Optimalizált súlyok beolvasása fájlból
+with open("results/optimal_weights.txt", "r", encoding="utf-8") as f:
+    weight_text = f.read()
 
 # ✉️ E-mail küldése
 msg = EmailMessage()
@@ -55,6 +54,9 @@ Kedves István,
 
 📘 Vásárlási napló:
 {buy_log}
+
+📊 Optimalizált súlyok:
+{weight_text}
 
 📈 Visszateszt összefoglaló:
 {backtest_summary}

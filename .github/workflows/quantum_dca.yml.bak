@@ -24,10 +24,21 @@ jobs:
     - name: Script futtatása
       run: python main.py
 
-    - name: Fájlok listázása
-      run: ls -lah
+    - name: Vásárlási napló beolvasása
+      id: buylog
+      run: |
+        echo "content<<EOF" >> $GITHUB_OUTPUT
+        cat buy_log.txt >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
 
-    - name: E-mail küldése az eredményekkel
+    - name: Visszateszt összefoglaló beolvasása
+      id: backtest
+      run: |
+        echo "content<<EOF" >> $GITHUB_OUTPUT
+        cat backtest_summary.txt >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: E-mail küldése
       uses: dawidd6/action-send-mail@v3
       with:
         server_address: smtp.gmail.com
@@ -41,12 +52,15 @@ jobs:
         body: |
           Kedves István,
 
-          A kvantum-alapú DCA szimuláció és visszateszt lefutott.
+          ✅ A kvantum-alapú DCA szimuláció és visszateszt lefutott. Itt vannak az eredmények:
 
-          A csatolt fájlokban találod a vásárlási naplót és az összefoglalót.
+          📘 Vásárlási napló:
 
-          Üdv,
+          ${{ steps.buylog.outputs.content }}
+
+          📈 Visszateszt összefoglaló:
+
+          ${{ steps.backtest.outputs.content }}
+
+          Üdvözlettel:
           GitHub Actions bot
-        attachments: |
-          buy_log.txt
-          backtest_summary.txt

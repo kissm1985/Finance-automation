@@ -1,0 +1,26 @@
+name: Run Quantum DCA Portfolio Optimizer
+
+on:
+  workflow_dispatch:  # manuális indítás a GitHub webes felületéről
+
+jobs:
+  run-dca:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Repo letöltése
+      uses: actions/checkout@v3
+
+    - name: Python telepítése
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Függőségek telepítése
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas numpy scipy
+
+    - name: Futtatás
+      run: |
+        python main.py

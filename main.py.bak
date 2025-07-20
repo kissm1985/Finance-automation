@@ -1,6 +1,6 @@
 from load_data import load_all_price_data
 from optimize_portfolio import optimize_portfolio
-from dca_simulator import run_dca_strategy
+from dca_strategy import apply_dca_strategy
 from backtest import run_backtest
 
 # --- 1. Adatok betöltése

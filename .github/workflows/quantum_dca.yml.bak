@@ -65,6 +65,7 @@ jobs:
           📈 Visszateszt összefoglaló:
 
           ${{ steps.backtest.outputs.backtest }}
+          
 
           Üdvözlettel:
           GitHub Actions bot

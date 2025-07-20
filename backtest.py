@@ -48,3 +48,4 @@ Teljes hozam: {portfolio_value - total_cost:.2f} € ({(portfolio_value / total_
         f.write(summary)
 
     print("📈 Visszateszt lefutott – backtest_summary.txt mentve.")
+    return summary

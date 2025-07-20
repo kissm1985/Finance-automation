@@ -13,7 +13,7 @@ price_data = load_all_price_data()
 
 # --- 2. Portfólió optimalizálása (Sharpe-ráta maximalizálás)
 print("⚙️ Portfólió optimalizálása...")
-optimal_weights = optimize_portfolio(price_data)
+optimal_weights = optimize_portfolio(price_data, debug=True)
 
 # --- 3. DCA stratégia futtatása
 print("💰 DCA stratégia futtatása...")

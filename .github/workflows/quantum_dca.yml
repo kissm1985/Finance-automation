@@ -29,5 +29,5 @@ jobs:
       with:
         name: dca-results
         path: |
-          buy_log.txt
-          backtest_summary.txt
+          results/buy_log.txt
+          results/backtest_summary.txt

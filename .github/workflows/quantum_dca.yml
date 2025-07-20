@@ -23,13 +23,11 @@ jobs:
 
     - name: Script futtatása
       run: python main.py
-
+        
     - name: Vásárlási napló beolvasása
       id: buylog
       run: |
-        echo "buylog<<EOF" >> $GITHUB_OUTPUT
-        cat results/buy_log.txt >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
+        echo "buylog=$(cat results/buy_log.txt | base64)" >> $GITHUB_OUTPUT
 
     - name: Visszateszt összefoglaló beolvasása
       id: backtest

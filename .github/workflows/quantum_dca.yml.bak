@@ -9,10 +9,10 @@ jobs:
 
     steps:
     - name: Kód letöltése
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Python telepítése
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: 3.11
 
@@ -27,15 +27,15 @@ jobs:
     - name: Vásárlási napló beolvasása
       id: buylog
       run: |
-        echo "content<<EOF" >> $GITHUB_OUTPUT
-        cat buy_log.txt >> $GITHUB_OUTPUT
+        echo "buylog<<EOF" >> $GITHUB_OUTPUT
+        cat results/buy_log.txt >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
 
     - name: Visszateszt összefoglaló beolvasása
       id: backtest
       run: |
-        echo "content<<EOF" >> $GITHUB_OUTPUT
-        cat backtest_summary.txt >> $GITHUB_OUTPUT
+        echo "backtest<<EOF" >> $GITHUB_OUTPUT
+        cat results/backtest_summary.txt >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
 
     - name: E-mail küldése
@@ -56,11 +56,11 @@ jobs:
 
           📘 Vásárlási napló:
 
-          ${{ steps.buylog.outputs.content }}
+          ${{ steps.buylog.outputs.buylog }}
 
           📈 Visszateszt összefoglaló:
 
-          ${{ steps.backtest.outputs.content }}
+          ${{ steps.backtest.outputs.backtest }}
 
           Üdvözlettel:
           GitHub Actions bot

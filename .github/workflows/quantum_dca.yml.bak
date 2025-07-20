@@ -1,29 +1,26 @@
-import subprocess
-import os
+name: Run Quantum DCA Portfolio Optimizer
 
-def run_pipeline():
-    print("🔧 Indul a Quantum DCA Pipeline...")
+on:
+  workflow_dispatch:  # manuális indítás a GitHub webes felületéről
 
-    required_files = [
-        "config.py",
-        "load_data.py",
-        "optimize_portfolio.py",
-        "dca_strategy.py",
-        "sell_logic.py",
-        "backtest.py",
-        "main.py"
-    ]
+jobs:
+  run-dca:
+    runs-on: ubuntu-latest
 
-    for file in required_files:
-        if not os.path.exists(file):
-            print(f"❌ Hiányzó fájl: {file}")
-            return
+    steps:
+    - name: Repo letöltése
+      uses: actions/checkout@v3
 
-    try:
-        subprocess.run(["python", "main.py"], check=True)
-        print("✅ Pipeline sikeresen lefutott.")
-    except subprocess.CalledProcessError as e:
-        print(f"❌ Hiba a futtatás során: {e}")
+    - name: Python telepítése
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
 
-if __name__ == "__main__":
-    run_pipeline()
+    - name: Függőségek telepítése
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas numpy scipy
+
+    - name: Futtatás
+      run: |
+        python main.py

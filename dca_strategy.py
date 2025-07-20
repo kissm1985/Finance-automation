@@ -36,3 +36,6 @@ def apply_dca_strategy(price_data, weights, sell_signals=None):
 
     full_log = f"DCA összeg: {DCA_AMOUNT} €\n"
     full_log += f"Tranzakciós díj összesen: {total_fees:.2f} €\n\n"
+    
+    return full_log
+

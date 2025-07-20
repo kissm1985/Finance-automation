@@ -68,7 +68,8 @@ def optimize_portfolio(price_data):
         debug_output.append(f"\n⭐ Sharpe-ráta: {sharpe:.4f}")
 
         # Írás fájlba
-        with open("results/optimization_debug.txt", "w", encoding="utf-8") as f:
+        os.makedirs(RESULTS_DIR, exist_ok=True)
+        with open(os.path.join(RESULTS_DIR, "optimization_debug.txt"), "w", encoding="utf-8") as f:
             f.write("\n".join(debug_output))
 
         print("📝 Debug statisztikák mentve: results/optimization_debug.txt")

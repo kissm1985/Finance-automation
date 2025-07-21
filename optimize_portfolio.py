@@ -9,7 +9,7 @@ def sharpe_ratio(weights, returns):
         return -1e6
     return -portfolio_return / portfolio_volatility  # mínusz, mert minimalizálunk
 
-def optimize_portfolio(price_data, debug=False):
+def optimize_portfolio(price_data, debug=True):
     returns = price_data.pct_change().dropna()
 
     num_assets = returns.shape[1]

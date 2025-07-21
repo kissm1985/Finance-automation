@@ -36,8 +36,8 @@ def optimize_portfolio(price_data, debug=False):
     
 
     if debug:
-        os.makedirs("results", exist_ok=True)
-        with open("results/optimal_weights.txt", "w", encoding="utf-8") as f:
+        os.makedirs(RESULTS_DIR, exist_ok=True)
+        with open(os.path.join(RESULTS_DIR, "optimal_weights.txt"), "w", encoding="utf-8") as f:
             f.write("🔍 Optimalizált súlyok:\n")
             for symbol, weight in weight_dict.items():
                 f.write(f"{symbol}: {weight:.4f}\n")

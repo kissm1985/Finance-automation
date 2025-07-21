@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
+from config import RESULTS_DIR
 
 def sharpe_ratio(weights, returns):
     portfolio_return = np.sum(returns.mean() * weights)

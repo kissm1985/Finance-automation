@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import os
+
 from scipy.optimize import minimize
 from config import RESULTS_DIR
 

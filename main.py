@@ -38,8 +38,8 @@ with open("backtest_summary.txt", "w") as f:
 print("✅ Kész: Eredmények mentve.")
 
 # Optimalizált súlyok beolvasása fájlból
-with open(os.path.join(RESULTS_DIR, "optimal_weights.txt"), "r", encoding="utf-8") as f:
-    weight_text = f.read()
+#with open(os.path.join(RESULTS_DIR, "optimal_weights.txt"), "r", encoding="utf-8") as f:
+#   weight_text = f.read()
 
 # ✉️ E-mail küldése
 msg = EmailMessage()
@@ -56,7 +56,7 @@ Kedves István,
 {buy_log}
 
 📊 Optimalizált súlyok:
-{weight_text}
+{optimal_weights}
 
 📈 Visszateszt összefoglaló:
 {backtest_summary}

@@ -2,7 +2,7 @@ from load_data import load_all_price_data
 from optimize_portfolio import optimize_portfolio
 from dca_strategy import apply_dca_strategy
 from backtest import run_backtest
-from config import EMAIL_SENDER, EMAIL_RECEIVER, EMAIL_PASSWORD, DCA_AMOUNT
+from config import EMAIL_SENDER, EMAIL_RECEIVER, EMAIL_PASSWORD, DCA_AMOUNT, RESULTS_DIR
 import os
 import smtplib
 from email.message import EmailMessage

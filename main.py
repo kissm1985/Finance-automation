@@ -3,7 +3,7 @@ from optimize_portfolio import optimize_portfolio
 from dca_strategy import apply_dca_strategy
 from backtest import run_backtest
 from config import EMAIL_SENDER, EMAIL_RECEIVER, EMAIL_PASSWORD, DCA_AMOUNT
-
+import os
 import smtplib
 from email.message import EmailMessage
 

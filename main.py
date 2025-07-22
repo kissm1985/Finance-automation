@@ -68,6 +68,17 @@ msg["To"] = EMAIL_RECEIVER
 msg.set_content("Ez egy HTML formázott üzenet.")
 msg.add_alternative(html_body, subtype="html")
 
+for filename in os.listdir("results"):
+    if filename.endswith(".png"):
+        with open(os.path.join("results", filename), "rb") as img:
+            msg.add_attachment(
+                img.read(),
+                maintype="image",
+                subtype="png",
+                filename=filename,
+                cid=filename  # cid használat a HTML-hez
+            )
+
 print("📤 E-mail küldése...")
 
 with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:

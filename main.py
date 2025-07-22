@@ -4,6 +4,7 @@ from dca_strategy import apply_dca_strategy
 from backtest import run_backtest
 from config import EMAIL_SENDER, EMAIL_RECEIVER, EMAIL_PASSWORD, DCA_AMOUNT, RESULTS_DIR
 import os
+import pandas as pd
 import smtplib
 from email.message import EmailMessage
 from report_generator import generate_email_body

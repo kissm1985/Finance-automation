@@ -42,7 +42,7 @@ print("✅ Kész: Eredmények mentve.")
 
 # ✉️ E-mail generálás
 
-#html_body = generate_email_body(buy_log, backtest_summary, optimal_weights)
+html_body = generate_email_body(buy_log, backtest_summary, optimal_weights)
 
 print(optimal_weights)
 

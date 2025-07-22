@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List
+import pandas as pd
 
 def allocation_dict_to_html_table(allocation_table):
     html = "<table border='1' style='border-collapse: collapse;'>"

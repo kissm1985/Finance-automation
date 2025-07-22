@@ -31,11 +31,11 @@ backtest_summary = run_backtest(price_data)
 #print("💾 Eredmények mentése fájlba...")
 
 #with open("buy_log.txt", "w") as f:
-    f.write("Vásárlási napló (DCA):\n")
-    f.write(buy_log)
+#    f.write("Vásárlási napló (DCA):\n")
+#    f.write(buy_log)
 #with open("backtest_summary.txt", "w") as f:
-    f.write("Visszateszt összefoglaló:\n")
-    f.write(backtest_summary)
+#    f.write("Visszateszt összefoglaló:\n")
+#    f.write(backtest_summary)
 #print("✅ Kész: Eredmények mentve.")
 
 

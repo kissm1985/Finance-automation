@@ -6,6 +6,7 @@ from config import EMAIL_SENDER, EMAIL_RECEIVER, EMAIL_PASSWORD, DCA_AMOUNT, RES
 import os
 import pandas as pd
 import smtplib
+from typing import List
 from email.message import EmailMessage
 from report_generator import generate_email_body
 

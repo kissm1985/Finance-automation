@@ -33,7 +33,6 @@ def convert_weights_to_allocation_table(weights: dict, price_data: pd.DataFrame,
         })
     return table
 
-
 # 💡 Allokációs táblázat HTML formában
 def generate_allocation_table_html(allocation_table: List[str]) -> str:
     html = """

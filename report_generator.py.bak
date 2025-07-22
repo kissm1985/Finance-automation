@@ -1,6 +1,6 @@
 from datetime import datetime
 
-def generate_email_body(buy_log: list[str], dca_summary: str, backtest_summary: str, allocation_table: list[dict]) -> str:
+def generate_email_body(buy_log: list[str], backtest_summary: str, allocation_table: list[dict]) -> str:
     month = datetime.now().strftime("%Y. %B")
     
     html = f"""
@@ -33,9 +33,7 @@ def generate_email_body(buy_log: list[str], dca_summary: str, backtest_summary: 
         html += "</ul>"
 
     html += f"""
-      <h3>📊 DCA összegzés</h3>
-      <pre>{dca_summary}</pre>
-      
+
       <h3>📈 Visszateszt összefoglaló</h3>
       <pre>{backtest_summary}</pre>
 

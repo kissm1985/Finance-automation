@@ -36,10 +36,9 @@ def generate_allocation_table_html(allocation_table: List[dict]) -> str:
 def generate_buy_log_html(buy_log: List[str]) -> str:
     if not buy_log:
         return ""
-    html = "<h4>📝 Vásárlási napló:</h4><ul>"
-    for line in buy_log:
-        html += f"{line}"
-    html += "</ul>"
+    html = "<h4>📝 Vásárlási napló</h4><pre style='background-color: #f8f8f8; padding: 12px; border: 1px solid #ddd; white-space: pre-wrap;'>"
+    html += "\n".join(buy_log)
+    html += "</pre>"
     return html
 
 def generate_backtest_summary_html(backtest_summary: str) -> str:
@@ -66,7 +65,7 @@ def generate_email_body(buy_log: List[str], backtest_summary: str, allocation_ta
 
 
 
-def generate_email_body(buy_log: list[str], backtest_summary: str, allocation_table: dict) -> str:
+#def generate_email_body(buy_log: list[str], backtest_summary: str, allocation_table: dict) -> str:
     month = datetime.now().strftime("%Y. %B")
     
     html = f"""

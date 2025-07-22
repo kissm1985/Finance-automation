@@ -56,4 +56,19 @@ def apply_dca_strategy(price_data, weights, sell_signals=None):
         f.write(full_log)
 
     print("✅ DCA stratégia futtatva – buy_log.txt mentve.")
-    return full_log
+    
+    # Táblázatos formátum (HTML emailhez vagy strukturált feldolgozáshoz)
+    buy_table_dicts = [
+        {
+            "symbol": symbol,
+            "price": price,
+            "allocation": allocated,
+            "quantity": quantity
+        }
+        for (symbol, price, allocated, quantity) in buy_table
+    ]
+
+    print("✅ DCA stratégia futtatva – buy_log.txt mentve.")
+    return full_log, buy_table_dicts
+    
+  

@@ -61,7 +61,7 @@ html_body = generate_email_body(buy_log, backtest_summary, allocation_table)
 
 # ✉️ E-mail küldése
 msg = EmailMessage()
-msg["Subject"] = "Kvantum DCA eredmények"
+msg["Subject"] = "DCA report"
 msg["From"] = EMAIL_SENDER
 msg["To"] = EMAIL_RECEIVER
 

@@ -9,6 +9,26 @@ from email.message import EmailMessage
 from report_generator import generate_email_body
 
 
+def convert_weights_to_allocation_table(weights: dict, price_data: pd.DataFrame, dca_amount: float, transaction_fee: float) -> List[dict]:
+    latest_prices = price_data.iloc[-1]
+    table = []
+    
+    for symbol, weight in weights.items():
+        price = latest_prices.get(symbol)
+        if price is None or price <= 0:
+            continue
+        allocation = DCA_AMOUNT * weight
+        quantity = (allocation - TRANSACTION_FEE) / price
+        table.append({
+            "symbol": symbol,
+            "price": price,
+            "allocation": allocation,
+            "quantity": quantity
+        })
+    return table
+
+
+
 # Adatok betöltése, számolás
 
 # --- 1. Adatok betöltése
@@ -18,6 +38,9 @@ price_data = load_all_price_data()
 # --- 2. Portfólió optimalizálása (Sharpe-ráta maximalizálás)
 print("⚙️ Portfólió optimalizálása...")
 optimal_weights = optimize_portfolio(price_data, debug=True)
+allocation_table = convert_weights_to_allocation_table(
+    optimal_weights, price_data, DCA_AMOUNT, TRANSACTION_FEE
+)
 
 # --- 3. DCA stratégia futtatása
 print("💰 DCA stratégia futtatása...")
@@ -31,7 +54,7 @@ backtest_summary = run_backtest(price_data)
 
 # ✉️ E-mail generálás
 
-html_body = generate_email_body(buy_log, backtest_summary, optimal_weights)
+html_body = generate_email_body(buy_log, backtest_summary, allocation_table)
 
 
 # ✉️ E-mail generálás vége

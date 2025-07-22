@@ -44,8 +44,7 @@ def generate_allocation_table_html(allocation_table: List[str]) -> str:
       </tr>
     """
     
-    allocation_table = convert_weights_to_allocation_table(weights, price_data)
-    
+   
     for row in allocation_table:
         html += f"""
         <tr>

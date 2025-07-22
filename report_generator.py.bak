@@ -1,6 +1,18 @@
 from datetime import datetime
 
-def generate_email_body(buy_log: list[str], backtest_summary: str, allocation_table: list[dict]) -> str:
+
+def allocation_dict_to_html_table(allocation_table):
+    html = "<table border='1' style='border-collapse: collapse;'>"
+    html += "<tr><th>Részvény</th><th>Allokáció (%)</th></tr>"
+
+    for symbol, weight in allocation_table.items():
+        html += f"<tr><td>{symbol}</td><td>{weight * 100:.2f} %</td></tr>"
+
+    html += "</table>"
+    return html
+    
+
+def generate_email_body(buy_log: list[str], backtest_summary: str, allocation_table: dict) -> str:
     month = datetime.now().strftime("%Y. %B")
     
     html = f"""
@@ -8,19 +20,18 @@ def generate_email_body(buy_log: list[str], backtest_summary: str, allocation_ta
     <body>
       <h2>✅ Kvantum-alapú DCA eredmények – {month}</h2>
       
-      <h3>💸 Havi befektetési terv</h3>
+      <h3>📊 Optimalizált portfólió allokáció</h3>
       <table border="1" cellspacing="0" cellpadding="6">
         <tr>
-          <th>Részvény</th><th>Árfolyam (€)</th><th>Allokáció (€)</th><th>Mennyiség (db)</th>
+          <th>Részvény</th><th>Allokáció (%)</th>
         </tr>
     """
-    for row in allocation_table:
+
+    for symbol, weight in allocation_table.items():
         html += f"""
         <tr>
-          <td>{row['symbol']}</td>
-          <td>{row['price']:.2f}</td>
-          <td>{row['allocation']:.2f}</td>
-          <td>{row['quantity']:.4f}</td>
+          <td>{symbol}</td>
+          <td>{weight * 100:.2f} %</td>
         </tr>
         """
 

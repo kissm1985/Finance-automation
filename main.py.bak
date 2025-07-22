@@ -52,6 +52,9 @@ msg["Subject"] = "Kvantum DCA eredmények"
 msg["From"] = EMAIL_SENDER
 msg["To"] = EMAIL_RECEIVER
 
+msg.set_content("Ez egy HTML formázott üzenet.")
+msg.add_alternative(html_body, subtype="html")
+
 # msg.set_content(f"""\
 # Kedves István,
 

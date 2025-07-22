@@ -8,6 +8,9 @@ import smtplib
 from email.message import EmailMessage
 from report_generator import generate_email_body
 
+
+# Adatok betöltése, számolás
+
 # --- 1. Adatok betöltése
 print("🔄 Árfolyamadatok betöltése...")
 price_data = load_all_price_data()
@@ -38,13 +41,16 @@ with open("backtest_summary.txt", "w") as f:
 
 print("✅ Kész: Eredmények mentve.")
 
+# Adatok betöltése, számolás vége
+
 
 
 # ✉️ E-mail generálás
 
 html_body = generate_email_body(buy_log, backtest_summary, optimal_weights)
-
 print(optimal_weights)
+
+# ✉️ E-mail generálás vége
 
 # ✉️ E-mail küldése
 msg = EmailMessage()
@@ -55,27 +61,12 @@ msg["To"] = EMAIL_RECEIVER
 msg.set_content("Ez egy HTML formázott üzenet.")
 msg.add_alternative(html_body, subtype="html")
 
-# msg.set_content(f"""\
-# Kedves István,
-
-# ✅ A kvantum-alapú DCA szimuláció és visszateszt lefutott. Itt vannak az eredmények:
-
-# 📘 Vásárlási napló:
-# {buy_log}
-
-# 📊 Optimalizált súlyok:
-# {optimal_weights}
-
-# 📈 Visszateszt összefoglaló:
-# {backtest_summary}
-
-# Üdvözlettel:
-# GitHub Actions bot
-# """)
-
 print("📤 E-mail küldése...")
+
 with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
     smtp.login(EMAIL_SENDER, EMAIL_PASSWORD)
     smtp.send_message(msg)
 
 print("✅ E-mail elküldve.")
+
+# ✉️ E-mail küldése vége

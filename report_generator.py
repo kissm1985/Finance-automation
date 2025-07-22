@@ -37,9 +37,15 @@ def generate_email_body(buy_log: list[str], backtest_summary: str, allocation_ta
 
     html += "</table>"
 
+    if isinstance(buy_log, str):
+        lines = buy_log.splitlines()
+    else:
+        lines = buy_log
+
     if buy_log:
         html += "<h4>📝 Vásárlási napló:</h4><ul>"
-        for line in buy_log:
+        
+        for line in lines:
             html += f"<li>{line}</li>"
         html += "</ul>"
 

@@ -46,7 +46,7 @@ def generate_email_body(buy_log: list[str], backtest_summary: str, allocation_ta
         html += "<h4>📝 Vásárlási napló:</h4><ul>"
         
         for line in lines:
-            html += f"<li>{line}</li>"
+            html += f"{line}"
         html += "</ul>"
 
     html += f"""

@@ -13,7 +13,7 @@ def allocation_dict_to_html_table(allocation_table):
     
 
 
-def generate_allocation_table_html(allocation_table: List[dict]) -> str:
+def generate_allocation_table_html(allocation_table: List[str]) -> str:
     html = """
     <h3>💸 Havi befektetési terv</h3>
     <table border="1" cellspacing="0" cellpadding="6">
@@ -64,51 +64,3 @@ def generate_email_body(buy_log: List[str], backtest_summary: str, allocation_ta
 
 
 
-
-#def generate_email_body(buy_log: list[str], backtest_summary: str, allocation_table: dict) -> str:
-    month = datetime.now().strftime("%Y. %B")
-    
-    html = f"""
-    <html>
-    <body>
-      <h2>✅ Kvantum-alapú DCA eredmények – {month}</h2>
-      
-      <h3>📊 Optimalizált portfólió allokáció</h3>
-      <table border="1" cellspacing="0" cellpadding="6">
-        <tr>
-          <th>Részvény</th><th>Allokáció (%)</th>
-        </tr>
-    """
-
-    for symbol, weight in allocation_table.items():
-        html += f"""
-        <tr>
-          <td>{symbol}</td>
-          <td>{weight * 100:.2f} %</td>
-        </tr>
-        """
-
-    html += "</table>"
-
-    if isinstance(buy_log, str):
-        lines = buy_log.splitlines()
-    else:
-        lines = buy_log
-
-    if buy_log:
-        html += "<h4>📝 Vásárlási napló:</h4><ul>"
-        
-        for line in lines:
-            html += f"{line}"
-        html += "</ul>"
-
-    html += f"""
-
-      <h3>📈 Visszateszt összefoglaló</h3>
-      <pre>{backtest_summary}</pre>
-
-      <p>Üdvözlettel:<br><strong>GitHub Actions bot</strong></p>
-    </body>
-    </html>
-    """
-    return html

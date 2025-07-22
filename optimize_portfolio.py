@@ -30,14 +30,12 @@ def optimize_portfolio(price_data, debug=True):
         constraints=constraints
     )
     
-
     if not result.success:
         raise ValueError("Optimalizáció sikertelen: " + result.message)
 
     # Optimalizált súlyok
     weight_dict = dict(zip(returns.columns, result.x))
     
-
     if debug:
         os.makedirs(RESULTS_DIR, exist_ok=True)
         with open(os.path.join(RESULTS_DIR, "optimal_weights.txt"), "w", encoding="utf-8") as f:

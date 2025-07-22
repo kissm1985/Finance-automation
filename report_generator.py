@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List
 import pandas as pd
 
+# 💡 Táblázat súlyokról – egyszerű HTML táblázat
 def allocation_dict_to_html_table(allocation_table):
     html = "<table border='1' style='border-collapse: collapse;'>"
     html += "<tr><th>Részvény</th><th>Allokáció (%)</th></tr>"
@@ -12,10 +13,12 @@ def allocation_dict_to_html_table(allocation_table):
     html += "</table>"
     return html
 
-def convert_weights_to_allocation_table(weights: dict, price_data: pd.DataFrame) -> list[dict]:
-    latest_prices = price_data.iloc[-1]
 
+# 💡 Súlyokból konkrét allokációs táblázat
+def convert_weights_to_allocation_table(weights: dict, price_data: pd.DataFrame, dca_amount: float, transaction_fee: float) -> List[dict]:
+    latest_prices = price_data.iloc[-1]
     table = []
+    
     for symbol, weight in weights.items():
         price = latest_prices.get(symbol)
         if price is None or price <= 0:
@@ -28,11 +31,10 @@ def convert_weights_to_allocation_table(weights: dict, price_data: pd.DataFrame)
             "allocation": allocation,
             "quantity": quantity
         })
-
     return table
 
 
-
+# 💡 Allokációs táblázat HTML formában
 def generate_allocation_table_html(allocation_table: List[str]) -> str:
     html = """
     <h3>💸 Havi befektetési terv</h3>
@@ -56,6 +58,7 @@ def generate_allocation_table_html(allocation_table: List[str]) -> str:
     html += "</table>"
     return html
 
+# 💡 Vásárlási napló HTML formában
 def generate_buy_log_html(buy_log: List[str]) -> str:
     if not buy_log:
         return ""
@@ -64,12 +67,14 @@ def generate_buy_log_html(buy_log: List[str]) -> str:
     html += "</pre>"
     return html
 
+# 💡 Backtest összefoglaló HTML formában
 def generate_backtest_summary_html(backtest_summary: str) -> str:
     return f"""
     <h3>📈 Visszateszt összefoglaló</h3>
     <pre>{backtest_summary}</pre>
     """
 
+# 💡 Teljes e-mail HTML összeállítása
 def generate_email_body(buy_log: List[str], backtest_summary: str, allocation_table: dict) -> str:
     month = datetime.now().strftime("%Y. %B")
     html = f"""

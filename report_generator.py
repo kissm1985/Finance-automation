@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Union
 import pandas as pd
 
 # 💡 Táblázat súlyokról – egyszerű HTML táblázat
@@ -61,8 +61,14 @@ def generate_allocation_table_html(allocation_table: List[str]) -> str:
 def generate_buy_log_html(buy_log: List[str]) -> str:
     if not buy_log:
         return ""
-    html = "<h4>📝 Vásárlási napló</h4><pre style='background-color: #f8f8f8; padding: 12px; border: 1px solid #ddd; white-space: pre-wrap;'>"
-    html += "\n".join(buy_log)
+        
+    for line in buy_log:
+        if isinstance(line, list):
+            # pl. ["ASML", "734.58", "27.61", "0.0363"]
+            html += " | ".join(str(item) for item in line) + "\n"
+        else:
+            html += str(line) + "\n"
+
     html += "</pre>"
     return html
 

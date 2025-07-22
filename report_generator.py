@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List, Union
 import pandas as pd
+import os
 
 # 💡 Táblázat súlyokról – egyszerű HTML táblázat
 def allocation_dict_to_html_table(allocation_table):
@@ -80,6 +81,24 @@ def generate_backtest_summary_html(backtest_summary: str) -> str:
     <pre>{backtest_summary}</pre>
     """
 
+def generate_charts_html(image_dir="results") -> str:
+    chart_titles = {
+        "portfolio_value.png": "📊 Portfólió értékének alakulása",
+        "allocation_pie_chart.png": "🧩 Aktuális portfólió allokáció",
+    }
+
+    html = "<h3>📉 Vizualizációk</h3>"
+
+    for filename in sorted(os.listdir(image_dir)):
+        if filename.endswith(".png"):
+            title = chart_titles.get(filename, f"📈 {filename.replace('_', ' ').split('.')[0].capitalize()}")
+            html += f"<h4>{title}</h4>"
+            html += f"<img src='cid:{filename}' style='max-width: 600px; border: 1px solid #ccc; margin-bottom: 20px;' /><br>"
+
+    return html
+
+
+
 # 💡 Teljes e-mail HTML összeállítása
 def generate_email_body(buy_log: List[str], backtest_summary: str, allocation_table: dict) -> str:
     month = datetime.now().strftime("%Y. %B")
@@ -90,6 +109,7 @@ def generate_email_body(buy_log: List[str], backtest_summary: str, allocation_ta
       {generate_allocation_table_html(allocation_table)}
       {generate_buy_log_html(buy_log)}
       {generate_backtest_summary_html(backtest_summary)}
+      {generate_charts_html()}
       <p>Üdvözlettel:<br><strong>GitHub Actions bot</strong></p>
     </body>
     </html>

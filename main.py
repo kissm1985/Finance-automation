@@ -27,28 +27,12 @@ buy_log = apply_dca_strategy(price_data, optimal_weights, sell_signals=[])
 print("📈 Visszateszt futtatása...")
 backtest_summary = run_backtest(price_data)
 
-# --- 5. Eredmények fájlba írása
-#print("💾 Eredmények mentése fájlba...")
-
-#with open("buy_log.txt", "w") as f:
-#    f.write("Vásárlási napló (DCA):\n")
-#    f.write(buy_log)
-#with open("backtest_summary.txt", "w") as f:
-#    f.write("Visszateszt összefoglaló:\n")
-#    f.write(backtest_summary)
-#print("✅ Kész: Eredmények mentve.")
-
-
-
-
 # Adatok betöltése, számolás vége
-
-
 
 # ✉️ E-mail generálás
 
 html_body = generate_email_body(buy_log, backtest_summary, optimal_weights)
-print(optimal_weights)
+
 
 # ✉️ E-mail generálás vége
 

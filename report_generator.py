@@ -48,7 +48,7 @@ def generate_backtest_summary_html(backtest_summary: str) -> str:
     <pre>{backtest_summary}</pre>
     """
 
-def generate_email_body(buy_log: List[str], backtest_summary: str, allocation_table: List[dict]) -> str:
+def generate_email_body(buy_log: List[str], backtest_summary: str, allocation_table: dict) -> str:
     month = datetime.now().strftime("%Y. %B")
     html = f"""
     <html>
@@ -66,7 +66,7 @@ def generate_email_body(buy_log: List[str], backtest_summary: str, allocation_ta
 
 
 
-#def generate_email_body(buy_log: list[str], backtest_summary: str, allocation_table: dict) -> str:
+def generate_email_body(buy_log: list[str], backtest_summary: str, allocation_table: dict) -> str:
     month = datetime.now().strftime("%Y. %B")
     
     html = f"""

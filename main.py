@@ -2,7 +2,7 @@ from load_data import load_all_price_data
 from optimize_portfolio import optimize_portfolio
 from dca_strategy import apply_dca_strategy
 from backtest import run_backtest
-from config import EMAIL_SENDER, EMAIL_RECEIVER, EMAIL_PASSWORD, DCA_AMOUNT, RESULTS_DIR
+from config import EMAIL_SENDER, EMAIL_RECEIVER, EMAIL_PASSWORD, DCA_AMOUNT, RESULTS_DIR, TRANSACTION_FEE
 import os
 import pandas as pd
 import smtplib
@@ -55,11 +55,9 @@ backtest_summary = run_backtest(price_data)
 # Adatok betöltése, számolás vége
 
 # ✉️ E-mail generálás
-
 html_body = generate_email_body(buy_log, backtest_summary, allocation_table)
-
-
 # ✉️ E-mail generálás vége
+
 
 # ✉️ E-mail küldése
 msg = EmailMessage()
@@ -77,5 +75,4 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
     smtp.send_message(msg)
 
 print("✅ E-mail elküldve.")
-
 # ✉️ E-mail küldése vége

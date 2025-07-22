@@ -10,7 +10,26 @@ def allocation_dict_to_html_table(allocation_table):
 
     html += "</table>"
     return html
-    
+
+def convert_weights_to_allocation_table(weights: dict, price_data: pd.DataFrame) -> list[dict]:
+    latest_prices = price_data.iloc[-1]
+
+    table = []
+    for symbol, weight in weights.items():
+        price = latest_prices.get(symbol)
+        if price is None or price <= 0:
+            continue
+        allocation = DCA_AMOUNT * weight
+        quantity = (allocation - TRANSACTION_FEE) / price
+        table.append({
+            "symbol": symbol,
+            "price": price,
+            "allocation": allocation,
+            "quantity": quantity
+        })
+
+    return table
+
 
 
 def generate_allocation_table_html(allocation_table: List[str]) -> str:
@@ -21,6 +40,9 @@ def generate_allocation_table_html(allocation_table: List[str]) -> str:
         <th>Részvény</th><th>Árfolyam (€)</th><th>Allokáció (€)</th><th>Mennyiség (db)</th>
       </tr>
     """
+    
+    allocation_table = convert_weights_to_allocation_table(weights, price_data)
+    
     for row in allocation_table:
         html += f"""
         <tr>

@@ -61,7 +61,9 @@ def generate_allocation_table_html(allocation_table: List[str]) -> str:
 def generate_buy_log_html(buy_log: List[str]) -> str:
     if not buy_log:
         return ""
-        
+
+    html = "<h4>📝 Vásárlási napló</h4><pre style='background-color: #f8f8f8; padding: 12px; border: 1px solid #ddd; white-space: pre-wrap;'>"
+    
     for line in buy_log:
         if isinstance(line, list):
             # pl. ["ASML", "734.58", "27.61", "0.0363"]
